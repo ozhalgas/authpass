@@ -239,6 +239,19 @@ abstract class AppData implements Built<AppData, AppDataBuilder>, HasToJson {
   /// Values must be comma separated or `*` for all fields.
   String? get searchFields;
 
+  /// counter to identify whether to request the master password
+  Map<String, int>? _quickUnlockCounter;
+
+  int? getQuickUnlockCounter(String uuid) => _quickUnlockCounter![uuid];
+  
+  void incrementQuickUnlockCounter(String uuid){
+    _quickUnlockCounter![uuid] = _quickUnlockCounter![uuid] == null ? 1 : _quickUnlockCounter![uuid]! + 1;
+  }
+
+  void resetQuickUnlockCounter(String uuid){
+    _quickUnlockCounter![uuid] = 0;
+  }
+
   @BuiltValueHook(initializeBuilder: true)
   static void _setDefaults(AppDataBuilder b) => b..systemWideShortcuts = false;
 

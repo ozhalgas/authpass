@@ -44,6 +44,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:logging/logging.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as path;
 import 'package:pedantic/pedantic.dart';
 import 'package:provider/provider.dart';
@@ -227,7 +228,7 @@ class _SelectFileWidgetState extends State<SelectFileWidget>
     _logger.finer('didChangeDependencies ${widget.skipQuickUnlock}');
     if (!widget.skipQuickUnlock) {
       WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        _checkQuickUnlock();
+        _checkQuickUnlock(AppDataBloc.createUuid());
       });
     }
     _linuxAppArmorCheck();
@@ -254,17 +255,25 @@ class _SelectFileWidgetState extends State<SelectFileWidget>
     super.didUpdateWidget(oldWidget);
     _logger.finer('didUpdateWidget --- ${oldWidget != widget}');
     if (oldWidget != widget && !widget.skipQuickUnlock) {
-      _checkQuickUnlock();
+      _checkQuickUnlock(AppDataBloc.createUuid());
     }
   }
 
-  Future<void> _checkQuickUnlock() {
+  Future<void> _checkQuickUnlock(String uuid) {
     final loc = AppLocalizations.of(context);
     return asyncRunTask((progress) async {
       if (_quickUnlockAttempted) {
         _logger.fine('_checkQuickUnlock already did quick unlock. skipping.');
         return;
       }
+
+      final AppData appData = Provider.of<AppData>(context, listen: false);
+      if(appData.getQuickUnlockCounter(uuid)! > 10){
+        appData.resetQuickUnlockCounter(uuid);
+      }else{
+        appData.incrementQuickUnlockCounter(uuid);
+      }
+
       _quickUnlockAttempted = true;
       progress.progressLabel = loc.quickUnlockingFiles;
       final kdbxBloc = Provider.of<KdbxBloc>(context, listen: false);
