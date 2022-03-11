@@ -1,3 +1,4 @@
+import 'package:authpass/bloc/app_data.dart';
 import 'package:authpass/bloc/kdbx/file_source.dart';
 import 'package:authpass/bloc/kdbx_bloc.dart';
 import 'package:authpass/ui/screens/create_file.dart';
@@ -35,12 +36,17 @@ class MasterPasswordChangeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final kdbxBloc = Provider.of<KdbxBloc>(context);
     final loc = AppLocalizations.of(context);
+    final AppData appData = AppData();
+
+    String uuid = AppDataBloc.createUuid();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.changeMasterPasswordScreenTitle),
       ),
       body: MasterPasswordChangeForm(
+        appData: appData,
+        uuid: uuid,
         fileSource: fileSource,
         file: kdbxBloc.fileForFileSource(fileSource)!.kdbxFile,
       ),
@@ -53,10 +59,14 @@ class MasterPasswordChangeForm extends StatefulWidget {
     Key? key,
     required this.fileSource,
     required this.file,
+    required this.appData,
+    required this.uuid,
   }) : super(key: key);
 
   final FileSource fileSource;
   final KdbxFile file;
+  final AppData appData;
+  final String uuid;
 
   @override
   _MasterPasswordChangeFormState createState() =>
@@ -115,6 +125,33 @@ class _MasterPasswordChangeFormState extends State<MasterPasswordChangeForm>
                 },
               ),
               const SizedBox(height: 16),
+              if(widget.appData.getQuickUnlockCounter(widget.uuid)! > 10)
+                Container(
+                  child: Column(
+                    children: [
+                      const Text(
+                        'You used Quick Unlock a lot of times. Let us know that you remember Master Password.',
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: validatePassword, 
+                            child: Text('Validate'),
+                          ),
+                          TextButton(
+                            onPressed: dismissPassword, 
+                            child: Text('Validate'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ), 
+                ),
               PasswordInputField(
                 labelText: loc.inputMasterPasswordText,
                 controller: _password,
@@ -183,4 +220,12 @@ class _MasterPasswordChangeFormState extends State<MasterPasswordChangeForm>
           Navigator.of(context).pop();
         }
       });
+
+  void validatePassword() {
+    //TODO
+  }
+
+  void dismissPassword() {
+    //TODO
+  }
 }
