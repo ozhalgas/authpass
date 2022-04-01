@@ -12,6 +12,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart' as iterables;
 
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+
 enum FinishButtonStyle {
   done,
   save,
@@ -96,8 +98,14 @@ class _GeneratePasswordState extends State<GeneratePassword> {
   int? _passwordLength = 20;
   final _passwordLengthCustom = TextEditingController();
 
+  //  screenshot disabling
+  Future<void> secureScreen() async {
+   await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE); 
+  }
+
   @override
   void initState() {
+    secureScreen();
     super.initState();
   }
 

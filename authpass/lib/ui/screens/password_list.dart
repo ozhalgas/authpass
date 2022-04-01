@@ -52,6 +52,8 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:string_literal_finder_annotations/string_literal_finder_annotations.dart';
 
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+
 final _logger = Logger('password_list');
 
 class EntryViewModel implements Comparable<EntryViewModel> {
@@ -450,8 +452,14 @@ class _PasswordListContentState extends State<PasswordListContent>
   AutofillServiceStatus? _autofillStatus;
   bool? _dismissedAutofillSuggestion;
 
+//  screenshot disabling
+  Future<void> secureScreen() async {
+   await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE); 
+  }
+
   @override
   void initState() {
+    secureScreen();
     super.initState();
     _logger.finer('Initializing password list content.');
 //    _isolateRunner.then((runner) => runner.run(PasswordListFilterIsolateRunner.init, widget.entries)).then((result) {
