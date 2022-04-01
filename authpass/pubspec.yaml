@@ -183,6 +183,9 @@ dependencies:
       url: https://github.com/authpass/window_manager.git
       ref: remove-web
 
+#  for screenshot disabling
+  flutter_windowmanager: ^0.2.0
+
 dev_dependencies:
   integration_test:
     sdk: flutter
